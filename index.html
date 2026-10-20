@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>주권진단 키트</title>
+<style>
+:root{--bg:#f7f5f0;--card:#fff;--ink:#1d2433;--sub:#566074;--line:#d9d4c7;--accent:#1f4e79;--accent-ink:#fff;--warn:#9a3412;--ok:#166534}
+@media (prefers-color-scheme:dark){:root{--bg:#161a22;--card:#1f2430;--ink:#eef0f5;--sub:#a7b0c2;--line:#3a4152;--accent:#7fb2e5;--accent-ink:#0d1520;--warn:#fdba74;--ok:#86efac}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 system-ui,"Malgun Gothic",sans-serif}
+header{padding:20px 16px 8px;max-width:760px;margin:0 auto}
+h1{font-size:26px;margin:0 0 4px}
+h2{font-size:22px;margin:0 0 8px}
+p.sub{color:var(--sub);margin:0}
+nav{display:flex;gap:6px;flex-wrap:wrap;max-width:760px;margin:12px auto 0;padding:0 16px}
+nav button{flex:1 1 auto;min-height:48px;padding:8px 10px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;font-size:16px;cursor:pointer}
+nav button[aria-selected=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+main{max-width:760px;margin:12px auto 80px;padding:0 16px}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;display:none}
+section.on{display:block}
+label{display:block;font-weight:600;margin:14px 0 4px}
+input[type=number],input[type=text],input[type=date],textarea{width:100%;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+textarea{min-height:84px;resize:vertical}
+input[type=range]{width:100%;height:36px}
+.row{display:flex;gap:10px;align-items:center}
+.row output{min-width:2.2em;text-align:right;font-weight:700}
+.hint{color:var(--sub);font-size:16px;margin:2px 0 0}
+.warn{color:var(--warn);font-size:16px;margin:4px 0 0;min-height:1.4em}
+.box{background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:12px;margin-top:12px}
+.btn{min-height:48px;padding:10px 18px;border:0;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-size:17px;font-weight:700;cursor:pointer}
+.btn.alt{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.notice{background:var(--bg);border-left:4px solid var(--warn);padding:10px 12px;border-radius:6px;font-size:16px;margin-bottom:12px}
+.scar{border-top:1px solid var(--line);margin-top:14px;padding-top:6px}
+.bar{height:14px;border-radius:7px;background:var(--line);overflow:hidden}.bar i{display:block;height:100%;background:var(--accent)}
+.quad{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.quad label{margin:0;border:1px solid var(--line);border-radius:10px;padding:10px;font-weight:500;cursor:pointer}
+.card-out{white-space:pre-wrap;word-break:keep-all}
+@media print{header p,nav,.actions,.notice,section:not(#s-card){display:none!important}section#s-card{display:block!important;border:0}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+<header>
+  <h1>주권진단 키트</h1>
+  <p class="sub">명함 없이 선택받는 사람을 만드는 5단계 워크시트</p>
+</header>
+<nav id="tabs" role="tablist"></nav>
+<main>
+  <div class="notice">입력한 내용은 <b>이 기기의 브라우저에만</b> 저장됩니다. 기관명, 인명, 대외비, 식별 가능한 사건은 쓰지 마세요.</div>
+
+  <section id="s-1"><h2>1. 명함 증발 숫자</h2>
+    <p>내일 명함이 사라집니다. 오늘 저녁, 직책 없이 부탁할 수 있는 사람은 몇 명입니까? 이름은 쓰지 않고 숫자만 적습니다.</p>
+    <label for="count">직책 없이 부탁할 수 있는 사람 (명)</label>
+    <input id="count" type="number" min="0" max="500" inputmode="numeric">
+    <p class="hint" id="countMsg"></p>
+  </section>
+
+  <section id="s-2"><h2>2. 5변수 자가진단</h2>
+    <p>각 질문에 0점(전혀 아니다)부터 10점(매우 그렇다)까지 정직하게 답하세요. 정답은 없습니다.</p>
+    <div id="vars"></div>
+    <div class="box" id="varResult"></div>
+    <h2 style="margin-top:20px">나는 어느 사분면인가</h2>
+    <p class="hint">세로는 내면의 실체(지식 자산), 가로는 외부 타이틀입니다. 인성 평가가 아니라 구조 진단입니다.</p>
+    <div class="quad" id="quad"></div>
+  </section>
+
+  <section id="s-3"><h2>3. 흉터 일지와 원칙 1문장</h2>
+    <p>뼈아팠던 실패 3건을 정리하고, 공통점에서 원칙 한 문장을 뽑습니다.</p>
+    <div id="scars"></div>
+    <h2 style="margin-top:20px">나의 원칙 문장</h2>
+    <label for="p-s">[상황]일 때</label><input id="p-s" type="text" placeholder="예: 현장 정보와 지시가 충돌할 때">
+    <label for="p-a">나는 [행동]한다</label><input id="p-a" type="text" placeholder="예: 현장 정보를 먼저 확인한다">
+    <label for="p-r">왜냐하면 [이유]</label><input id="p-r" type="text" placeholder="예: 지시는 평상시를 기준으로 만들어지기 때문이다">
+    <div class="box"><b>내 문장</b><div id="pOut" class="card-out"></div></div>
+    <p class="warn" id="pWarn"></p>
+    <p class="hint">점검 질문: 이 문장이 틀렸던 장면이 있었나요? 있다면 더 구체적인 조건을 넣으세요.</p>
+  </section>
+
+  <section id="s-4"><h2>4. 한 줄 훅과 90초 질문</h2>
+    <label for="h-who">누가</label><input id="h-who" type="text" placeholder="예: 매뉴얼만으로 판단하기 어려운 현장 관리자가">
+    <label for="h-what">무엇을</label><input id="h-what" type="text" placeholder="예: 신뢰를 먼저 확인하는 일을">
+    <label for="h-proof">어떤 근거로 (내 경험 사실만)</label><input id="h-proof" type="text" placeholder="예: 직접 겪은 실패 사례 분석으로">
+    <label for="h-how">어떤 방식으로</label><input id="h-how" type="text" placeholder="강연, 글, 1:1 자문, 모임 중 하나">
+    <div class="box"><b>내 한 줄 훅</b><div id="hOut" class="card-out"></div></div>
+    <p class="warn" id="hWarn"></p>
+    <h2 style="margin-top:20px">90초 자진단 질문 5개</h2>
+    <p class="hint">상대가 스스로 자기 상태를 알아차리게 하는 질문입니다. 정답을 알려주는 말은 쓰지 마세요.</p>
+    <div id="qs"></div>
+  </section>
+
+  <section id="s-5"><h2>5. 90일 계획</h2>
+    <label for="d30">30일: 내 원칙 문장을 3명에게 말하기</label><textarea id="d30" placeholder="누구에게, 언제"></textarea>
+    <label for="d60">60일: 질문 5개를 5~10명에게 익명으로 테스트</label><textarea id="d60"></textarea>
+    <label for="d90">90일: Day 1 점수와 비교하기</label><textarea id="d90"></textarea>
+    <label for="first">첫 행동 (한 가지)</label><input id="first" type="text">
+    <label for="date">첫 행동 날짜</label><input id="date" type="date">
+    <label for="buddy">함께할 사람 1명 (이름 대신 관계로 적어도 됩니다)</label><input id="buddy" type="text">
+  </section>
+
+  <section id="s-card"><h2>나의 주권 카드</h2>
+    <div class="box card-out" id="cardOut"></div>
+    <div class="actions">
+      <button class="btn" id="print">인쇄 / PDF 저장</button>
+      <button class="btn alt" id="copy">글로 복사</button>
+      <button class="btn alt" id="reset">모두 지우기</button>
+    </div>
+    <p class="hint" id="actMsg" role="status"></p>
+    <div class="box" id="cloud">
+      <b>익명 통계로 보내기 (선택)</b>
+      <p class="hint">점수 5개, 직책 없이 부탁할 수 있는 사람 수, 선택한 사분면만 보냅니다. 이름, 이메일, 직접 쓴 문장은 보내지 않습니다. 동의하지 않아도 모든 기능을 쓸 수 있습니다.</p>
+      <p class="hint" id="retention"></p>
+      <label style="display:flex;gap:10px;align-items:flex-start;font-weight:500"><input type="checkbox" id="cloudOk" style="margin-top:6px"> 위 내용을 읽었고, 익명 결과를 보내는 것에 동의합니다</label>
+      <div class="actions"><button class="btn alt" id="cloudSend" disabled>익명 결과 보내기</button></div>
+      <p class="hint" id="cloudMsg" role="status"></p>
+    </div>
+  </section>
+</main>
+
+<script>
+"use strict";
+const KEY="sovereignKit.v1";
+const SB_URL="https://ezeeaeyvsumbnxjneuyj.supabase.co";
+// Publishable key: meant to be public. What it can do is limited by the table's row-level security (insert only).
+// Never put a secret or service_role key in this file.
+const SB_KEY="sb_publishable_aCeb2WdngI0CwE9vuobb8g_SsbwzQZ1";
+const RETENTION_TEXT="[보유 기간: 운영자 확정 필요]";
+const VARS=[
+ ["재량권 독점도","내 판단으로 결정했다고 느낀 결정의 비율은 얼마나 됩니까?","직책을 빼고 '내 생각'만으로 의견을 구성해 보세요."],
+ ["절차 우회율","규정을 따르면 손해라고 느껴 우회한 경험은 얼마나 잦았습니까?","그 결정들을 3번 탭의 흉터 일지로 정리해 패턴을 찾으세요."],
+ ["회전문 밀착도","내 관계는 사람 때문이 아니라 직책 때문에 맺어진 정도가 얼마나 됩니까?","조직을 떠난 뒤에도 연락할 5명을 적고 관계를 점검하세요."],
+ ["소통 단절 지수","의견을 냈을 때 '검토하겠습니다'로 끝난 경험은 얼마나 잦았습니까?","의견이 안 먹힌 이유가 표현 때문인지 조직 때문인지 구분해 보세요."],
+ ["사후 정당화율","일이 끝난 뒤 '상황이 급했다'처럼 상황 탓으로 설명한 빈도는 얼마나 됩니까?","결정하기 전에 '내 원칙은 이것'이라고 먼저 선언해 보세요."]
+];
+const QUADS=["각성한 출구전략가 (내면 있음, 타이틀 있음)","주권적 지식 자산가 (내면 있음, 타이틀 의존 없음)","시한부 부품형 (내면 약함, 타이틀 있음)","표류하는 희생양 (내면 약함, 타이틀 없음)"];
+const TABS=["1 숫자","2 진단","3 원칙","4 훅","5 90일","카드"];
+const VAGUE=["최선을 다","열심히","항상","긍정적으로","노력","성실"];
+
+// ponytail: keyword list only. Misses vague phrases not in VAGUE; upgrade to a reviewer step if needed.
+function checkPrinciple(s,a,r){
+  const t=[s,a,r].join(" ");
+  if(!s.trim()||!a.trim()||!r.trim()) return "상황, 행동, 이유를 모두 채워야 원칙 문장이 됩니다.";
+  const hit=VAGUE.find(v=>t.includes(v));
+  if(hit) return "'"+hit+"'는 구호처럼 들릴 수 있습니다. 틀릴 수 있는 구체적 조건으로 바꿔 보세요.";
+  if(s.trim().length<6) return "상황을 더 구체적으로 적어 보세요.";
+  return "";
+}
+const situation=s=>{s=s.trim();return /때$/.test(s)?s:s+"일 때";};
+const principleText=(s,a,r)=>s&&a&&r?`${situation(s)}, 나는 ${a.trim()}. 왜냐하면 ${r.trim()}.`:"";
+const hookText=h=>h.who&&h.what&&h.proof&&h.how?`${h.who.trim()} ${h.what.trim()} ${h.proof.trim()} 해결하도록 돕습니다. (방식: ${h.how.trim()})`:"";
+// ponytail: heuristic only (company suffix, surname+title). Misses most real names; the opening notice is the real control.
+function leakWarn(text){return /(주식회사|\(주\)|(^|\s)[가-힣]{1,3}\s?(과장|부장|국장|팀장|차장|실장)님?)/.test(text)?"기관명이나 인명으로 보이는 표현이 있습니다. 익명으로 바꿔 주세요.":"";}
+
+// Course code from ?src=... Only plain tokens are accepted so nothing personal or odd can ride along in the URL.
+const cleanSrc=v=>typeof v==="string"&&/^[A-Za-z0-9_-]{1,30}$/.test(v)?v:null;
+// Anonymous payload: numbers and a choice only. No names, email, or any free-text field is ever included.
+const buildPayload=(s,src)=>({
+  src:cleanSrc(src),
+  trusted_people:s.count===""||isNaN(+s.count)?null:Math.max(0,Math.min(500,Math.round(+s.count))),
+  scores:s.scores.map(n=>Math.max(0,Math.min(10,Math.round(+n)))),
+  quadrant:s.quadrant<0?null:s.quadrant,
+  app_version:"1"
+});
+async function sendAnon(){
+  const src=new URLSearchParams(location.search).get("src");
+  const r=await fetch(SB_URL+"/rest/v1/diagnosis_results",{method:"POST",
+    headers:{apikey:SB_KEY,"Content-Type":"application/json",Prefer:"return=minimal"},
+    body:JSON.stringify(buildPayload(st,src))});
+  if(!r.ok) throw new Error("HTTP "+r.status);
+}
+
+const $=id=>document.getElementById(id);
+let st;
+function blank(){return {count:"",scores:[5,5,5,5,5],quadrant:-1,scars:[0,1,2].map(()=>({what:"",rule:"",broke:"",again:""})),principle:{s:"",a:"",r:""},hook:{who:"",what:"",proof:"",how:""},questions:["","","","",""],plan:{d30:"",d60:"",d90:"",first:"",date:"",buddy:""}};}
+function load(){try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);return Object.assign(blank(),o);}}catch(e){}return blank();}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+
+function build(){
+  TABS.forEach((t,i)=>{const b=document.createElement("button");b.textContent=t;b.setAttribute("role","tab");b.onclick=()=>show(i);$("tabs").appendChild(b);});
+  $("vars").innerHTML=VARS.map((v,i)=>`<label for="v${i}">${v[0]}</label><p class="hint">${v[1]}</p><div class="row"><input id="v${i}" type="range" min="0" max="10" step="1"><output id="o${i}"></output></div>`).join("");
+  $("quad").innerHTML=QUADS.map((q,i)=>`<label><input type="radio" name="quad" value="${i}"> ${q}</label>`).join("");
+  $("scars").innerHTML=st.scars.map((_,i)=>`<div class="scar"><b>실패 ${i+1}</b>
+    <label for="sc${i}a">일어난 일 (사건의 외형만)</label><input id="sc${i}a" type="text">
+    <label for="sc${i}b">그때 따른 규칙</label><input id="sc${i}b" type="text">
+    <label for="sc${i}c">어긴 규칙</label><input id="sc${i}c" type="text">
+    <label for="sc${i}d">다시 온다면</label><input id="sc${i}d" type="text"></div>`).join("");
+  $("qs").innerHTML=st.questions.map((_,i)=>`<label for="q${i}">질문 ${i+1}</label><input id="q${i}" type="text">`).join("");
+}
+function fill(){
+  $("count").value=st.count;
+  VARS.forEach((_,i)=>{$("v"+i).value=st.scores[i];$("o"+i).textContent=st.scores[i];});
+  document.querySelectorAll("input[name=quad]").forEach(r=>r.checked=(+r.value===st.quadrant));
+  st.scars.forEach((s,i)=>{$("sc"+i+"a").value=s.what;$("sc"+i+"b").value=s.rule;$("sc"+i+"c").value=s.broke;$("sc"+i+"d").value=s.again;});
+  $("p-s").value=st.principle.s;$("p-a").value=st.principle.a;$("p-r").value=st.principle.r;
+  ["who","what","proof","how"].forEach(k=>$("h-"+k).value=st.hook[k]);
+  st.questions.forEach((q,i)=>$("q"+i).value=q);
+  ["d30","d60","d90","first","date","buddy"].forEach(k=>$(k).value=st.plan[k]);
+}
+function render(){
+  const c=st.count;
+  $("countMsg").textContent=c===""?"":(+c<=3?"직책 없이 부탁할 사람이 적다면, 지금이 관계의 질을 점검할 때입니다.":(+c<=15?"핵심 지지 집단 규모입니다. 이 사람들과의 관계를 소중히 지키세요.":"넓은 관계입니다. 그중 정말 부탁할 수 있는 사람이 몇 명인지 다시 세어 보세요."));
+  const max=Math.max(...st.scores),min=Math.min(...st.scores),hi=st.scores.indexOf(max),lo=st.scores.indexOf(min);
+  $("varResult").innerHTML=VARS.map((v,i)=>`<div>${v[0]} ${st.scores[i]}점<div class="bar"><i style="width:${st.scores[i]*10}%"></i></div></div>`).join("")+
+    `<p><b>가장 높게 느낀 변수:</b> ${VARS[hi][0]}<br><span class="hint">${VARS[hi][2]}</span></p><p><b>가장 낮게 느낀 변수:</b> ${VARS[lo][0]}</p>`;
+  const p=st.principle;
+  $("pOut").textContent=principleText(p.s,p.a,p.r)||"위 세 칸을 채우면 문장이 완성됩니다.";
+  $("pWarn").textContent=(p.s||p.a||p.r)?(checkPrinciple(p.s,p.a,p.r)||leakWarn([p.s,p.a,p.r].join(" "))):"";
+  $("hOut").textContent=hookText(st.hook)||"네 칸을 채우면 훅이 완성됩니다.";
+  $("hWarn").textContent=/혁신|놀라운|최고|보장|확실/.test(Object.values(st.hook).join(" "))?"수식어나 약속 표현은 빼고 내 경험 사실만 쓰세요.":"";
+  $("cardOut").textContent=cardText();
+}
+function cardText(){
+  const hi=VARS[st.scores.indexOf(Math.max(...st.scores))][0];
+  const L=[];
+  L.push("[나의 주권 카드]");
+  L.push("직책 없이 부탁할 수 있는 사람: "+(st.count===""?"(미작성)":st.count+"명"));
+  L.push("현재 사분면: "+(st.quadrant<0?"(미선택)":QUADS[st.quadrant]));
+  L.push("가장 높게 느낀 변수: "+hi);
+  L.push("");L.push("원칙 문장");L.push(principleText(st.principle.s,st.principle.a,st.principle.r)||"(미작성)");
+  L.push("");L.push("한 줄 훅");L.push(hookText(st.hook)||"(미작성)");
+  L.push("");L.push("90초 질문");
+  st.questions.forEach((q,i)=>L.push((i+1)+". "+(q||"(미작성)")));
+  L.push("");L.push("90일 계획");
+  L.push("30일: "+(st.plan.d30||"(미작성)"));L.push("60일: "+(st.plan.d60||"(미작성)"));L.push("90일: "+(st.plan.d90||"(미작성)"));
+  L.push("첫 행동: "+(st.plan.first||"(미작성)")+(st.plan.date?" ("+st.plan.date+")":""));
+  L.push("함께할 사람: "+(st.plan.buddy||"(미작성)"));
+  return L.join("\n");
+}
+function bind(){
+  const on=(id,fn)=>$(id).addEventListener("input",e=>{fn(e.target.value);save();render();});
+  on("count",v=>st.count=v);
+  VARS.forEach((_,i)=>on("v"+i,v=>{st.scores[i]=+v;$("o"+i).textContent=v;}));
+  document.querySelectorAll("input[name=quad]").forEach(r=>r.addEventListener("change",()=>{st.quadrant=+r.value;save();render();}));
+  st.scars.forEach((_,i)=>{["a:what","b:rule","c:broke","d:again"].forEach(x=>{const [s,k]=x.split(":");on("sc"+i+s,v=>st.scars[i][k]=v);});});
+  on("p-s",v=>st.principle.s=v);on("p-a",v=>st.principle.a=v);on("p-r",v=>st.principle.r=v);
+  ["who","what","proof","how"].forEach(k=>on("h-"+k,v=>st.hook[k]=v));
+  st.questions.forEach((_,i)=>on("q"+i,v=>st.questions[i]=v));
+  ["d30","d60","d90","first","date","buddy"].forEach(k=>on(k,v=>st.plan[k]=v));
+  $("print").onclick=()=>window.print();
+  $("copy").onclick=async()=>{try{await navigator.clipboard.writeText(cardText());$("actMsg").textContent="복사했습니다.";}catch(e){$("actMsg").textContent="복사하지 못했습니다. 카드를 직접 선택해 복사하세요.";}};
+  $("reset").onclick=()=>{if(confirm("입력한 내용을 모두 지울까요? 되돌릴 수 없습니다.")){st=blank();save();fill();render();$("actMsg").textContent="모두 지웠습니다.";}};
+  $("retention").textContent="보관: "+RETENTION_TEXT+". 방문자는 다른 사람의 결과를 볼 수 없습니다.";
+  $("cloudOk").onchange=()=>{$("cloudSend").disabled=!$("cloudOk").checked;};
+  // ponytail: one send per page load (button locks after success). Reloading allows a second send; add a server-side limit if that matters.
+  $("cloudSend").onclick=async()=>{
+    const b=$("cloudSend");b.disabled=true;$("cloudMsg").textContent="보내는 중입니다...";
+    try{await sendAnon();$("cloudMsg").textContent="익명 결과를 보냈습니다. 감사합니다.";$("cloudOk").disabled=true;}
+    catch(e){b.disabled=!$("cloudOk").checked;$("cloudMsg").textContent=/404/.test(e.message)?"저장소가 아직 준비되지 않았습니다. 운영자에게 알려 주세요.":"보내지 못했습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.";}
+  };
+}
+function show(i){
+  document.querySelectorAll("section").forEach((s,j)=>s.classList.toggle("on",j===i));
+  [...$("tabs").children].forEach((b,j)=>b.setAttribute("aria-selected",j===i));
+  try{sessionStorage.setItem("sk.tab",i);}catch(e){}
+  window.scrollTo(0,0);
+}
+st=load();build();fill();bind();render();
+let t0=0;try{t0=+sessionStorage.getItem("sk.tab")||0;}catch(e){}
+show(t0);
+
+if(location.hash==="#test"){
+  console.assert(checkPrinciple("","","")!=="","empty must warn");
+  console.assert(checkPrinciple("현장 정보와 지시가 충돌할 때","현장 정보를 먼저 확인한다","지시는 평상시 기준이므로").includes("구호")===false,"concrete must pass");
+  console.assert(checkPrinciple("일을 할 때","항상 최선을 다한다","그래야 하므로").includes("구호"),"vague must warn");
+  console.assert(principleText("A상황","B행동","C이유")==="A상황일 때, 나는 B행동. 왜냐하면 C이유.","formula");
+  console.assert(principleText("현장 정보와 지시가 충돌할 때","B","C")==="현장 정보와 지시가 충돌할 때, 나는 B. 왜냐하면 C.","keep 때");
+  console.assert(leakWarn("김 부장님이 말했다")!=="","name+title warns");
+  console.assert(leakWarn("한 관리자가 말했다")==="","generic passes");
+  console.assert(cleanSrc("course_A-1")==="course_A-1","src ok");
+  console.assert(cleanSrc("김철수")===null&&cleanSrc("a b")===null&&cleanSrc("x".repeat(31))===null&&cleanSrc(null)===null,"src rejects odd values");
+  {const p=buildPayload({count:"7",scores:[0,10,5,11,-2],quadrant:1,principle:{s:"비밀",a:"",r:""},plan:{buddy:"홍길동"}},"c1");
+   console.assert(JSON.stringify(Object.keys(p))==='["src","trusted_people","scores","quadrant","app_version"]',"payload keys fixed");
+   console.assert(p.scores.join()==="0,10,5,10,0","scores clamped");
+   console.assert(!JSON.stringify(p).includes("비밀")&&!JSON.stringify(p).includes("홍길동"),"no free text leaks");
+   console.assert(buildPayload({count:"",scores:[1,1,1,1,1],quadrant:-1},null).quadrant===null,"empty -> null");}
+  console.log("selftest done");
+}
+</script>
+</body>
+</html>
